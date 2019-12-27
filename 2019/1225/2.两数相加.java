@@ -15,31 +15,38 @@
  */
 class Solution {
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode newNode = null;
-        ListNode currentNode = null;
+        ListNode firstNode = null;
+        ListNode prevNode = null;
         int over = 0;
         while (l1 != null || l2 != null) {
-            int sumVal = l1.val + l2.val;
-            ListNode nextNode = new ListNode((sumVal + over) % 10);
-            if (currentNode == null) {
-                currentNode = nextNode;
-                newNode = nextNode;
-            } else {
-                currentNode.next = nextNode;
-            }
-
-            currentNode = currentNode.next;
-            over = (sumVal + over) / 10;
-            if (l1.next != null) {
+            int sumVal = over;
+            if (l1 != null) {
+                sumVal += l1.val;
                 l1 = l1.next;
             }
 
-            if (l2.next != null) {
+            if (l2 != null) {
+                sumVal += l2.val;
                 l2 = l2.next;
             }
+            
+            ListNode nextNode = new ListNode(sumVal % 10);
+            if (prevNode == null) {
+                firstNode = nextNode;
+                prevNode = nextNode;
+            } else {
+                prevNode.next = nextNode;
+                prevNode = nextNode;
+            }
+
+            over = sumVal / 10;
         }
 
-        return newNode;
+        if (over > 0) {
+            prevNode.next = new ListNode(over);
+        }
+
+        return firstNode;
     }
 }
 // @lc code=end
