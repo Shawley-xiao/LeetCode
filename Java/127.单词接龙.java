@@ -1,6 +1,7 @@
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import jdk.internal.util.xml.impl.Pair;
 
 /*
  * @lc app=leetcode.cn id=127 lang=java
@@ -11,34 +12,43 @@ import java.util.Set;
 // @lc code=start
 class Solution {
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        Set<String> reached = new HashSet<String>();
-        reached.add(beginWord);
-        wordList.add(endWord);
-        int distance = 1;
-        while (!reached.contains(endWord)) {
-            Set<String> toAdd = new HashSet<String>();
-            for (String each : reached) {
-                for (int i = 0; i < each.length(); i++) {
-                    char[] chars = each.toCharArray();
-                    for (char ch = 'a'; ch <= 'z'; ch++) {
-                        chars[i] = ch;
-                        String word = new String(chars);
-                        if (wordList.contains(word)) {
-                            toAdd.add(word);
-                            wordList.remove(word);
-                        }
+        int L = beginWord.length();
+        HashMap<String, ArrayList<String>> allComboDict = new HashMap<>();
+        for (String word : wordList) {
+            for (int i = 0; i < L; i++) {
+                String newWord = beginWord.substring(0, i) + '*' + beginWord.substring(i + 1, L);
+                ArrayList<String> transformations = new ArrayList<>();
+                transformations.add(word);
+                allComboDict.put(newWord, transformations);
+            }
+        }
+
+        Queue<Pair<String, Integer>> Q = new LinkedList<Pair<String, Integer>>();
+        Q.add(new Pair(beginWord, 1));
+
+        HashMap<String, Boolean> visited = new HashMap<>();
+        visited.put(beginWord, true);
+
+        while (!Q.isEmpty()) {
+            Pair<String, Integer> node = Q.remove();
+            String word = node.getKey();
+            int level = node.getValue();
+            for (int i = 0; i < L; i++) {
+                String newWord = word.substring(0, i) + '*' + word.substring(i + 1, L);
+                for (String adjacentWord : allComboDict.getOrDefault(newWord, new ArrayList<>())) {
+                    if (adjacentWord.equals(endWord)) {
+                        return level + 1;
+                    }
+
+                    if (!visited.containsKey(adjacentWord)) {
+                        visited.put(adjacentWord, true);
+                        Q.add(new Pair(adjacentWord, level + 1));
                     }
                 }
             }
-            distance++;
-            if (toAdd.size() == 0) {
-                return 0;
-            }
-
-            reached = toAdd;
         }
 
-        return distance;
+        return 0;
     }
 }
 // @lc code=end
