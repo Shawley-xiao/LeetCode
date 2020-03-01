@@ -13,11 +13,11 @@ import jdk.internal.util.xml.impl.Pair;
 class Solution {
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
         int L = beginWord.length();
-        HashMap<String, ArrayList<String>> allComboDict = new HashMap<>();
+        HashMap<String, ArrayList<String>> allComboDict = new HashMap<String, ArrayList<String>>();
         for (String word : wordList) {
             for (int i = 0; i < L; i++) {
-                String newWord = beginWord.substring(0, i) + '*' + beginWord.substring(i + 1, L);
-                ArrayList<String> transformations = new ArrayList<>();
+                String newWord = word.substring(0, i) + '*' + word.substring(i + 1, L);
+                ArrayList<String> transformations = allComboDict.getOrDefault(newWord, new ArrayList<String>());
                 transformations.add(word);
                 allComboDict.put(newWord, transformations);
             }
@@ -26,7 +26,7 @@ class Solution {
         Queue<Pair<String, Integer>> Q = new LinkedList<Pair<String, Integer>>();
         Q.add(new Pair(beginWord, 1));
 
-        HashMap<String, Boolean> visited = new HashMap<>();
+        HashMap<String, Boolean> visited = new HashMap<String, Boolean>();
         visited.put(beginWord, true);
 
         while (!Q.isEmpty()) {
@@ -35,7 +35,7 @@ class Solution {
             int level = node.getValue();
             for (int i = 0; i < L; i++) {
                 String newWord = word.substring(0, i) + '*' + word.substring(i + 1, L);
-                for (String adjacentWord : allComboDict.getOrDefault(newWord, new ArrayList<>())) {
+                for (String adjacentWord : allComboDict.getOrDefault(newWord, new ArrayList<String>())) {
                     if (adjacentWord.equals(endWord)) {
                         return level + 1;
                     }
